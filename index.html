@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdEarn PK — Watch Ads & Earn Real PKR</title>
+    <meta name="theme-color" content="#020617">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            450: '#10b981',
+                            950: '#022c22',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+
+    <!-- Toast Notification Banner -->
+    <div id="toast-container" class="fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-tight text-white leading-none">AdEarn <span class="text-emerald-400">PK</span></h1>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Ads Dekhain &amp; PKR Kamayein</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-2.5">
+                <span id="nav-status-badge" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    Inactive
+                </span>
+
+                <button onclick="openAdminLoginModal()" title="Admin Panel" class="p-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 transition text-xs font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span class="hidden sm:inline">Admin</span>
+                </button>
+
+                <button onclick="openAppGuideModal()" title="How to make Android App" class="p-2.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-400 border border-sky-500/30 transition text-xs font-bold flex items-center gap-1.5">
+                    <i class="fa-brands fa-android"></i>
+                    <span class="hidden sm:inline">App APK</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6">
+
+        <!-- ========================================================= -->
+        <!-- 0. ADMIN PANEL SCREEN (LIVE MULTI-USER CONTROL)           -->
+        <!-- ========================================================= -->
+        <section id="admin-screen" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gradient-to-r from-amber-500/15 via-slate-900 to-slate-900 border border-amber-500/30 rounded-3xl p-6">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-white">Live Admin Control Panel</h2>
+                        <p class="text-xs text-slate-300" id="admin-sync-mode-label">Ready Mode: Apne account numbers aur users manage karain.</p>
+                    </div>
+                </div>
+                <button onclick="exitAdminPanel()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-white transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Back to User App
+                </button>
+            </div>
+
+            <!-- Live Admin Summary Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <span class="text-[11px] text-slate-400 uppercase font-semibold">Total Users</span>
+                    <p class="text-2xl font-extrabold text-white mt-1" id="admin-stat-total-users">0</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <span class="text-[11px] text-amber-400 uppercase font-semibold">Pending Approvals</span>
+                    <p class="text-2xl font-extrabold text-amber-400 mt-1" id="admin-stat-pending-users">0</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <span class="text-[11px] text-emerald-400 uppercase font-semibold">Active Users</span>
+                    <p class="text-2xl font-extrabold text-emerald-400 mt-1" id="admin-stat-active-users">0</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+                    <span class="text-[11px] text-rose-400 uppercase font-semibold">Pending Withdrawals</span>
+                    <p class="text-2xl font-extrabold text-rose-400 mt-1" id="admin-stat-pending-wd">0</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Payment Account Settings -->
+                <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-5 h-fit">
+                    <div class="flex items-center gap-2.5 border-b border-slate-800 pb-4">
+                        <i class="fa-solid fa-wallet text-emerald-400 text-lg"></i>
+                        <h3 class="text-lg font-bold text-white">Apne Payment Accounts Set Karain</h3>
+                    </div>
+
+                    <form onsubmit="saveAdminSettings(event)" class="space-y-4">
+                        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                            <p class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-mobile-screen-button"></i> JazzCash Account Details
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">JazzCash Account Holder Name</label>
+                                    <input type="text" id="admin-jazzcash-title" required placeholder="e.g. Muhammad Ali" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">JazzCash Number</label>
+                                    <input type="text" id="admin-jazzcash" required placeholder="0300-1234567" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-emerald-400 font-mono focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                            <p class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-wallet"></i> EasyPaisa Account Details
+                            </p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">EasyPaisa Account Holder Name</label>
+                                    <input type="text" id="admin-easypaisa-title" required placeholder="e.g. Ahmed Raza" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-white focus:outline-none focus:border-amber-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1">EasyPaisa Number</label>
+                                    <input type="text" id="admin-easypaisa" required placeholder="0345-9876543" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-emerald-400 font-mono focus:outline-none focus:border-amber-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Joining Fee (PKR)</label>
+                                <input type="number" id="admin-joining-fee" required min="100" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm font-bold text-white focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Invite Bonus (Coins)</label>
+                                <input type="number" id="admin-referral-bonus" required min="0" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm font-bold text-amber-400 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Admin PIN</label>
+                                <input type="text" id="admin-new-pin" required maxlength="6" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm font-mono font-bold text-amber-400 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+
+                        <!-- Easy Cloud Sync Box (No Code Editing Needed) -->
+                        <div class="p-3.5 rounded-2xl bg-sky-500/5 border border-sky-500/20 space-y-2">
+                            <p class="text-xs font-bold text-sky-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-cloud"></i> Multi-Mobile Live Sync (Optional)
+                            </p>
+                            <p class="text-[11px] text-slate-400">Agar aap doosre mobiles ka data live dekhna chahein, to apna Firebase Config yahan paste kar ke Save dabayein:</p>
+                            <textarea id="admin-firebase-json" rows="2" placeholder='{"apiKey":"...","projectId":"..."}' class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-sky-300 focus:outline-none focus:border-sky-500"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: All Registered Users & Withdrawals -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-users text-sky-400"></i> Registered Users (Approve / Block)
+                            </h3>
+                            <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Active
+                            </span>
+                        </div>
+                        <div id="admin-users-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                            <p class="text-xs text-slate-500 text-center py-4">Abhi tak koi user register nahi hua.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
+                            <i class="fa-solid fa-money-check-dollar text-emerald-400"></i> All Withdrawal Requests
+                        </h3>
+                        <div id="admin-withdrawals-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                            <p class="text-xs text-slate-500 text-center py-4">Koi withdrawal request mojood nahi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- 1. JOINING FEE / ACCOUNT ACTIVATION SCREEN                -->
+        <!-- ========================================================= -->
+        <section id="activation-screen" class="max-w-xl mx-auto my-4 sm:my-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Pending Verification Banner -->
+                <div id="pending-approval-box" class="hidden text-center py-6 space-y-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 text-3xl">
+                        <i class="fa-solid fa-hourglass-half animate-spin"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white">Payment Verification Pending</h2>
+                    <p class="text-sm text-slate-300 max-w-md mx-auto">
+                        Aap ki <span class="text-emerald-400 font-bold"><span id="pending-fee-display">1,000</span> PKR</span> payment detail Admin ko bhej di gayi hai. Jaise hi Admin aap ki Transaction ID verify kar ke Approve kare ga, aap ka dashboard automatic khul jaye ga!
+                    </p>
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-left text-xs space-y-1.5 max-w-sm mx-auto">
+                        <p class="text-slate-400">User Name: <span class="text-white font-bold" id="pending-user-name">-</span></p>
+                        <p class="text-slate-400">Mobile Number: <span class="text-white font-mono" id="pending-user-phone">-</span></p>
+                        <p class="text-slate-400">Method: <span class="text-emerald-400 font-bold" id="pending-method">-</span></p>
+                        <p class="text-slate-400">Transaction ID: <span class="text-amber-400 font-mono font-bold" id="pending-tid">-</span></p>
+                    </div>
+                    <button type="button" onclick="editSubmittedPayment()" class="text-xs text-slate-400 hover:text-white underline">
+                        Ghalat TID likh di? Dubara submit karain
+                    </button>
+                </div>
+
+                <!-- Blocked Banner -->
+                <div id="blocked-account-box" class="hidden text-center py-6 space-y-3">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 text-3xl">
+                        <i class="fa-solid fa-ban"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-rose-400">Account Suspended</h2>
+                    <p class="text-sm text-slate-400">Admin ne aap ka account temporarily block ya reject kar diya hai.</p>
+                </div>
+
+                <!-- Normal Joining Form -->
+                <div id="joining-form-wrapper">
+                    <div class="text-center mb-6">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-3xl mb-4">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold mb-2">
+                            Account Verification Required
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Account Activate Karain</h2>
+                        <p class="text-slate-400 text-sm mt-2">
+                            Daily 10 Ads dekh kar Coins earn karne aur PKR mein withdrawal lene ke liye <span class="text-emerald-400 font-bold"><span id="display-fee-text">1,000</span> PKR</span> one-time Joining Fee jama karwayein.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 mb-6 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">One-Time Joining Fee</p>
+                            <p class="text-2xl font-extrabold text-emerald-400 mt-0.5">Rs. <span id="display-fee-amount">1,000</span> <span class="text-xs font-normal text-slate-400">PKR</span></p>
+                        </div>
+                        <div class="text-right text-xs text-slate-400 space-y-1">
+                            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> 10 Daily Ads</p>
+                            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Instant Coin Credit</p>
+                            <p><i class="fa-solid fa-check text-emerald-400 mr-1"></i> Min Withdraw: 1,000 PKR</p>
+                        </div>
+                    </div>
+
+                    <form id="activation-form" onsubmit="handleActivation(event)" class="space-y-4">
+                        <div id="invited-by-banner" class="hidden p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center gap-2">
+                            <i class="fa-solid fa-gift text-emerald-400 text-sm"></i>
+                            <span>Aap ko <b id="invited-by-name" class="text-white">Friend</b> ne invite kiya hai!</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">1. Payment Method Select Karain</label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="joinMethod" value="JazzCash" class="peer sr-only" checked onchange="updateMerchantDetails()">
+                                    <div class="p-3.5 rounded-xl border border-slate-800 bg-slate-950 peer-checked:border-rose-500 peer-checked:bg-rose-500/10 text-center transition">
+                                        <i class="fa-solid fa-mobile-screen-button text-rose-400 text-xl mb-1"></i>
+                                        <p class="text-xs font-bold text-white">JazzCash</p>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="joinMethod" value="EasyPaisa" class="peer sr-only" onchange="updateMerchantDetails()">
+                                    <div class="p-3.5 rounded-xl border border-slate-800 bg-slate-950 peer-checked:border-emerald-500 peer-checked:bg-emerald-500/10 text-center transition">
+                                        <i class="fa-solid fa-wallet text-emerald-400 text-xl mb-1"></i>
+                                        <p class="text-xs font-bold text-white">EasyPaisa</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/50 border border-slate-700/70 rounded-2xl p-4 space-y-2.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-400" id="merchant-title-label">JazzCash Account Name:</span>
+                                <span class="font-bold text-white" id="merchant-title-display">AdEarn JazzCash</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-400" id="merchant-label">JazzCash Number:</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-mono font-bold text-emerald-400 text-sm" id="merchant-number">0300-1234567</span>
+                                    <button type="button" onclick="copyMerchantNumber()" class="px-2 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] text-white transition">
+                                        <i class="fa-regular fa-copy"></i> Copy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Aap Ka Poora Naam</label>
+                                <input type="text" id="join-sender-name" required placeholder="e.g. Ali Raza" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Aap Ka Mobile Number</label>
+                                <input type="tel" id="join-sender-phone" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white font-mono placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1.5">Payment Transaction ID (TID)</label>
+                            <input type="text" id="join-tid" required placeholder="e.g. 8472910452" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white font-mono placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            Submit Payment &amp; Request Activation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- 2. MAIN DASHBOARD (UNLOCKED AFTER ADMIN APPROVAL)         -->
+        <!-- ========================================================= -->
+        <section id="dashboard-screen" class="hidden space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Account Status</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-extrabold text-emerald-400">Active Member</span>
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1" id="user-greeting">Welcome, Member!</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Available Coins</span>
+                        <div class="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-2xl font-extrabold text-white"><span id="stat-coins">0</span> <span class="text-xs font-semibold text-amber-400">Coins</span></p>
+                        <p class="text-xs text-slate-400 mt-1">10 Coins = 1 PKR • Extra Locked: <span id="stat-extra-coins-mini" class="text-purple-400 font-bold">0</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-emerald-950/90 to-slate-900 border border-emerald-500/30 rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-emerald-300">PKR Wallet Balance</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-2xl font-extrabold text-emerald-400">Rs. <span id="stat-pkr">0.00</span></p>
+                        <p class="text-xs text-slate-300 mt-1">Min Withdrawal: <span class="font-semibold text-white">1,000 PKR</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Daily Ads Watched</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center">
+                            <i class="fa-solid fa-play-circle"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline justify-between">
+                            <p class="text-2xl font-extrabold text-white"><span id="stat-ads-watched">0</span><span class="text-base text-slate-400 font-semibold">/10</span></p>
+                            <span class="text-xs font-semibold text-sky-400" id="stat-ads-percent">0%</span>
+                        </div>
+                        <div class="w-full h-2 bg-slate-800 rounded-full mt-2 overflow-hidden">
+                            <div id="ads-progress-bar" class="h-full bg-gradient-to-r from-sky-400 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 border border-slate-800 p-2 rounded-2xl">
+                <div class="flex items-center gap-1.5 w-full sm:w-auto">
+                    <button onclick="switchTab('ads')" id="tab-btn-ads" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 text-slate-950 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-tv"></i> Daily Ads
+                    </button>
+                    <button onclick="switchTab('team')" id="tab-btn-team" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-300 hover:bg-slate-800 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-users"></i> My Team <span id="tab-team-count" class="px-1.5 py-0.5 rounded-full bg-slate-800 text-emerald-400 text-[10px]">0</span>
+                    </button>
+                    <button onclick="switchTab('wallet')" id="tab-btn-wallet" class="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-300 hover:bg-slate-800 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-wallet"></i> Withdraw
+                    </button>
+                </div>
+
+                <div class="text-xs text-slate-400 px-2">
+                    Daily Reset: <span class="text-emerald-400 font-semibold" id="today-date-badge">Today</span>
+                </div>
+            </div>
+
+            <!-- TAB 1: 10 DAILY ADS SECTION -->
+            <div id="tab-content-ads" class="space-y-4">
+                <div class="bg-gradient-to-r from-emerald-950/90 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-extrabold text-white">Apna Invite Link Share Karain</h4>
+                            <p class="text-[11px] text-slate-300">Har member par <span class="text-amber-400 font-bold">1,000 Instant</span> + <span class="text-purple-400 font-bold">1,000 Extra Coins</span> kamayein!</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <input type="text" id="home-referral-link-input" readonly class="flex-1 md:w-56 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-mono text-emerald-400 select-all focus:outline-none">
+                        <button type="button" onclick="copyReferralLink()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition shrink-0">
+                            <i class="fa-regular fa-copy"></i> Copy
+                        </button>
+                        <button type="button" onclick="shareOnWhatsApp()" class="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition shrink-0 flex items-center gap-1">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Today's Sponsored Ads (10 Ads)</h3>
+                        <p class="text-xs text-slate-400">Har ad ko 5 seconds dekhnay par <span class="text-amber-400 font-bold">+250 Coins (25 PKR)</span> automatic aap ke account mein add hon ge.</p>
+                    </div>
+                    <div class="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 px-3 py-2 rounded-xl font-medium">
+                        Daily Earning Potential: <span class="font-bold">2,500 Coins = 250 PKR</span>
+                    </div>
+                </div>
+
+                <div id="ads-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+
+            <!-- TAB 2: MY TEAM & REFERRAL BONUS SECTION -->
+            <div id="tab-content-team" class="hidden space-y-6">
+                <div class="bg-gradient-to-br from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 rounded-3xl p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl shrink-0">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-white">Doston Ko Invite Karain &amp; Double Bonus Kamayein</h3>
+                                <p class="text-xs text-slate-300 mt-0.5">
+                                    Har active member par <span class="text-amber-400 font-extrabold">+<span id="team-bonus-display">1,000</span> Instant Coins</span> + <span class="text-purple-400 font-extrabold">+<span id="team-extra-bonus-display">1,000</span> Extra Locked Coins</span> milain gay!
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-950/90 border border-slate-800 rounded-2xl px-4 py-2.5 text-center shrink-0">
+                            <span class="text-[11px] text-slate-400 block">Total Instant Bonus</span>
+                            <span class="text-base font-extrabold text-amber-400"><span id="team-total-bonus-coins">0</span> Coins</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-semibold text-slate-300">Aap Ka Personal Invite Link:</label>
+                        <div class="flex flex-col sm:flex-row gap-2.5">
+                            <input type="text" id="my-referral-link-input" readonly class="flex-1 px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-400 select-all focus:outline-none">
+                            <div class="flex gap-2">
+                                <button type="button" onclick="copyReferralLink()" class="flex-1 sm:flex-initial px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-regular fa-copy"></i> Copy Link
+                                </button>
+                                <button type="button" onclick="shareOnWhatsApp()" class="flex-1 sm:flex-initial px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                                    <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Extra Locked Coins Vault -->
+                <div class="bg-gradient-to-r from-purple-950/70 via-slate-900 to-slate-900 border border-purple-500/30 rounded-3xl p-6 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center text-2xl shrink-0">
+                                <i id="extra-vault-icon" class="fa-solid fa-lock"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-base sm:text-lg font-extrabold text-white">Extra Locked Coins Vault</h4>
+                                    <span id="extra-vault-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">Locked</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1">
+                                    Har member par <span class="text-purple-400 font-bold">1,000 Extra Coins</span> jama hotay hain. Yeh auto-convert nahi hotay — har <span class="text-white font-bold">10 Active Members</span> poore hone par aap khud convert kar saktay hain!
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl px-5 py-3 text-center shrink-0">
+                            <span class="text-[11px] text-slate-400 block">Extra Locked Balance</span>
+                            <span class="text-xl font-extrabold text-purple-400"><span id="extra-locked-coins-balance">0</span> Coins</span>
+                            <span class="text-[11px] text-emerald-400 block">= Rs. <span id="extra-locked-pkr-val">0</span> PKR</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 font-medium" id="extra-milestone-label">Agle 10 Active Members ka Target:</span>
+                            <span class="font-bold text-purple-300" id="extra-milestone-progress-text">0 / 10 Active Members</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="extra-milestone-bar" class="h-full bg-gradient-to-r from-purple-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-slate-400" id="extra-unlock-hint">
+                            10 Active Members mukammal karain taake aap apne Extra Coins convert kar sakain.
+                        </p>
+                    </div>
+
+                    <button type="button" id="claim-extra-coins-btn" disabled onclick="claimExtraLockedCoins()" class="w-full py-3.5 px-4 rounded-xl bg-slate-800 text-slate-400 font-extrabold text-xs sm:text-sm cursor-not-allowed transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-lock"></i> Locked (10 Active Members Mukammal Karain)
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center">
+                        <span class="text-[11px] text-slate-400 block">Total Invited</span>
+                        <span class="text-xl sm:text-2xl font-extrabold text-white mt-1 block" id="team-stat-total">0</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center">
+                        <span class="text-[11px] text-emerald-400 block">Active Members</span>
+                        <span class="text-xl sm:text-2xl font-extrabold text-emerald-400 mt-1 block" id="team-stat-active">0</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center">
+                        <span class="text-[11px] text-amber-400 block">Pending Approval</span>
+                        <span class="text-xl sm:text-2xl font-extrabold text-amber-400 mt-1 block" id="team-stat-pending">0</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h4 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-people-group text-emerald-400"></i> Meri Team Ke Members
+                        </h4>
+                        <span class="text-xs text-slate-400">Live Status</span>
+                    </div>
+                    <div id="my-team-members-list" class="space-y-3">
+                        <p class="text-xs text-slate-500 text-center py-6">Abhi tak aap ke link se kisi ne join nahi kiya. Apna link share karain aur bonus kamayein!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: COIN TO PKR CONVERTER & WITHDRAWAL SYSTEM -->
+            <div id="tab-content-wallet" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-repeat"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Coin to PKR Converter</h3>
+                                <p class="text-xs text-slate-400">Exchange Rate: <span class="text-emerald-400 font-semibold">10 Coins = 1 PKR</span></p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3 mb-4">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Available Coins (Instant):</span>
+                                <span class="font-bold text-amber-400"><span id="conv-avail-coins">0</span> Coins</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Extra Locked Coins:</span>
+                                <span class="font-bold text-purple-400"><span id="conv-locked-coins">0</span> Coins <span class="text-[10px] text-slate-500">(10 Members par unlock)</span></span>
+                            </div>
+                            <div class="flex justify-between text-xs border-t border-slate-800 pt-2">
+                                <span class="text-slate-400">Estimated PKR Value:</span>
+                                <span class="font-bold text-emerald-400">Rs. <span id="conv-est-pkr">0.00</span></span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="text-xs font-medium text-slate-300">Coins Enter Karain</label>
+                                    <button type="button" onclick="fillMaxCoins()" class="text-[11px] font-bold text-emerald-400 hover:underline">Max Coins</button>
+                                </div>
+                                <input type="number" id="convert-input" min="10" step="10" placeholder="e.g. 500" oninput="updateConvertPreview()" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white font-bold text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                                <span class="text-xs text-slate-300">Aap ko milain gay:</span>
+                                <span class="text-base font-extrabold text-emerald-400">Rs. <span id="convert-output-preview">0.00</span> PKR</span>
+                            </div>
+
+                            <button type="button" onclick="convertCoinsToPkr()" class="w-full py-3.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-sm transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-arrows-rotate"></i> Convert Coins to PKR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-money-bill-transfer"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-white">Withdraw PKR</h3>
+                                    <p class="text-xs text-slate-400">Minimum Limit: <span class="text-rose-400 font-bold">1,000 PKR</span></p>
+                                </div>
+                            </div>
+                            <div class="px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-right">
+                                <span class="text-[11px] text-slate-400 block">Withdrawable Balance</span>
+                                <span class="text-base font-extrabold text-emerald-400">Rs. <span id="withdraw-avail-pkr">0.00</span></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-5 bg-slate-950 border border-slate-800 rounded-2xl p-3.5">
+                            <div class="flex justify-between text-xs mb-1.5">
+                                <span class="text-slate-400">1,000 PKR Withdrawal Target</span>
+                                <span id="withdraw-target-status" class="font-bold text-amber-400">0 / 1,000 PKR</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div id="withdraw-progress-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <form id="withdrawal-form" onsubmit="handleWithdrawal(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Withdrawal Method Select Karain</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="withdrawMethod" value="JazzCash" class="peer sr-only" checked>
+                                        <div class="p-3 rounded-xl border border-slate-800 bg-slate-950 peer-checked:border-rose-500 peer-checked:bg-rose-500/10 text-center transition">
+                                            <p class="text-xs font-bold text-white">JazzCash</p>
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="withdrawMethod" value="EasyPaisa" class="peer sr-only">
+                                        <div class="p-3 rounded-xl border border-slate-800 bg-slate-950 peer-checked:border-emerald-500 peer-checked:bg-emerald-500/10 text-center transition">
+                                            <p class="text-xs font-bold text-white">EasyPaisa</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Account Holder Name</label>
+                                    <input type="text" id="withdraw-acc-name" required placeholder="e.g. Muhammad Usman" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-300 mb-1.5">Account / Mobile Number</label>
+                                    <input type="text" id="withdraw-acc-num" required placeholder="e.g. 03001234567" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white font-mono placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-slate-300 mb-1.5">Withdrawal Amount (Min 1,000 PKR)</label>
+                                <input type="number" id="withdraw-amount" min="1000" step="1" required placeholder="1000" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm font-bold text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                            </div>
+
+                            <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Withdrawal Request
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+                        <h4 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-emerald-400"></i> Withdrawal History
+                        </h4>
+                        <div id="withdrawal-history-list" class="space-y-2.5">
+                            <p class="text-xs text-slate-500 text-center py-4">Abhi tak koi withdrawal request nahi ki gayi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Login PIN Modal -->
+    <div id="admin-login-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl">
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-white">Admin Panel Login</h3>
+                <p class="text-xs text-slate-400 mt-1">Apna Admin PIN enter karain (Default PIN: <span class="text-amber-400 font-mono font-bold">1234</span>)</p>
+            </div>
+            <form onsubmit="verifyAdminPin(event)" class="space-y-3">
+                <input type="password" id="admin-pin-input" required placeholder="Enter PIN (1234)" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-center font-mono text-lg tracking-widest text-white focus:outline-none focus:border-amber-500">
+                <div class="flex gap-2.5">
+                    <button type="button" onclick="closeAdminLoginModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white transition">Cancel</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-xs font-extrabold text-slate-950 transition">Open Admin</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APK Guide Modal -->
+    <div id="app-guide-modal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-brands fa-android text-emerald-400 text-2xl"></i>
+                    <h3 class="text-base font-bold text-white">Isay Mobile App (APK) Kaise Banayein?</h3>
+                </div>
+                <button onclick="closeAppGuideModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                    <p class="font-bold text-emerald-400 mb-1">Step 1: Aap Ka Live Link</p>
+                    <p>Aap ka permanent link <b class="text-amber-300">https://zainbodla115.github.io/EranAd/</b> hai — isay direct WhatsApp par share karain.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                    <p class="font-bold text-sky-400 mb-1">Step 2: Chrome se Direct App Install</p>
+                    <p>Mobile Chrome mein apna link kholain -> 3 dots par click karain -> <b>"Add to Home Screen"</b> dabayein.</p>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                    <p class="font-bold text-amber-400 mb-1">Step 3: APK File Banayein</p>
+                    <p><b>webintoapp.com</b> par apna GitHub link paste kar ke 1 click mein <b>.APK</b> file download kar lain.</p>
+                </div>
+            </div>
+            <button onclick="closeAppGuideModal()" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">Samajh Gaya!</button>
+        </div>
+    </div>
+
+    <!-- Ad Player Modal -->
+    <div id="ad-player-modal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl">
+            <div class="px-5 py-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-300" id="modal-ad-badge">Sponsored Ad #1</span>
+                </div>
+                <div class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold">
+                    Reward: +<span id="modal-ad-reward">250</span> Coins
+                </div>
+            </div>
+
+            <div class="p-6 text-center space-y-5">
+                <div id="modal-ad-visual" class="w-full h-48 rounded-2xl bg-gradient-to-br from-emerald-600/20 via-slate-800 to-sky-600/20 border border-slate-700 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+                    <div id="modal-ad-icon" class="text-5xl text-emerald-400 mb-3 animate-bounce">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                    <h4 id="modal-ad-title" class="text-xl font-extrabold text-white">Daraz Mega Sale Pakistan</h4>
+                    <p id="modal-ad-desc" class="text-xs text-slate-300 mt-1 max-w-xs">Up to 70% off on Electronics &amp; Fashion across Pakistan!</p>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-semibold">
+                        <span class="text-slate-400" id="timer-status-text">Ad chal raha hai, intezar karain...</span>
+                        <span class="text-emerald-400 font-mono text-sm" id="timer-seconds-text">5s</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="modal-timer-bar" class="h-full bg-gradient-to-r from-amber-400 to-emerald-500 rounded-full transition-all duration-1000 ease-linear" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <button id="modal-claim-btn" disabled onclick="closeAdModal()" class="w-full py-3 rounded-xl bg-slate-800 text-slate-400 font-bold text-sm cursor-not-allowed transition">
+                    Please wait 5 seconds...
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-500">
+        AdEarn PK — Rewards &amp; Wallet App (10 Coins = 1 PKR | Min Withdraw: 1,000 PKR)
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const DAILY_ADS = [
+            { id: 1, title: "Jazz Super 4G Bundle", category: "Telecom", desc: "Har mahine 50GB internet aur unlimited minutes hasil karain.", reward: 250, icon: "fa-tower-cell", color: "text-rose-400" },
+            { id: 2, title: "Foodpanda Cravings Deal", category: "Food Delivery", desc: "Pehle order par Rs. 500 ka flat discount hasil karain.", reward: 250, icon: "fa-burger", color: "text-pink-400" },
+            { id: 3, title: "Daraz 11.11 Mega Sale", category: "E-Commerce", desc: "Smartphones aur home appliances par bhari bachat.", reward: 250, icon: "fa-bag-shopping", color: "text-orange-400" },
+            { id: 4, title: "Zong 4G Home WiFi", category: "Internet", desc: "Tez tareen internet ab aap ke poore ghar ke liye.", reward: 250, icon: "fa-wifi", color: "text-emerald-400" },
+            { id: 5, title: "InDrive City Rides", category: "Transport", desc: "Apni marzi ka kiraya tay karain aur safar asaan banayein.", reward: 250, icon: "fa-car-side", color: "text-lime-400" },
+            { id: 6, title: "EasyPaisa Raast Transfer", category: "Fintech", desc: "Kisi bhi bank mein muft aur fori raqam bhejain.", reward: 250, icon: "fa-money-bill-wave", color: "text-emerald-400" },
+            { id: 7, title: "SadaPay Freelance Card", category: "Banking", desc: "International payments receive karain behtareen rate par.", reward: 250, icon: "fa-credit-card", color: "text-teal-400" },
+            { id: 8, title: "PakWheels Car Inspection", category: "Automotive", desc: "Gaari kharidne se pehle 200+ points inspection karwayein.", reward: 250, icon: "fa-gauge-high", color: "text-sky-400" },
+            { id: 9, title: "Khaadi Festive Collection", category: "Fashion", desc: "Naye season ke khubsurat designs ab stores par dastiyab.", reward: 250, icon: "fa-shirt", color: "text-purple-400" },
+            { id: 10, title: "Cheetay Express Grocery", category: "Grocery", desc: "Taza sabziyan aur grocery sirf 30 minute mein ghar par.", reward: 250, icon: "fa-basket-shopping", color: "text-amber-400" }
+        ];
+
+        const EXCHANGE_RATE = 10;
+        const MIN_WITHDRAW_PKR = 1000;
+        const LOCAL_DB_KEY = 'adearn_pk_hybrid_db_v1';
+        const LOCAL_UID_KEY = 'adearn_pk_device_uid_v1';
+        const SAVED_FB_CONFIG_KEY = 'adearn_pk_saved_fb_config_v1';
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'adearn-pk-live';
+
+        function getActiveFirebaseConfig() {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                try { return JSON.parse(__firebase_config); } catch (e) {}
+            }
+            try {
+                const stored = localStorage.getItem(SAVED_FB_CONFIG_KEY);
+                if (stored) return JSON.parse(stored);
+            } catch (e) {}
+            return null;
+        }
+
+        const firebaseConfig = getActiveFirebaseConfig();
+
+        let db = null;
+        let auth = null;
+        let isCloudMode = false;
+        let currentUid = localStorage.getItem(LOCAL_UID_KEY) || ('USR-' + Math.random().toString(36).substring(2, 9).toUpperCase());
+        localStorage.setItem(LOCAL_UID_KEY, currentUid);
+
+        let adminConfig = {
+            pin: '1234',
+            jazzCashTitle: 'AdEarn JazzCash',
+            jazzCash: '0300-1234567',
+            easyPaisaTitle: 'AdEarn EasyPaisa',
+            easyPaisa: '0345-9876543',
+            joiningFee: 1000,
+            referralBonusCoins: 1000,
+            extraReferralCoins: 1000
+        };
+
+        let userProfile = null;
+        let allUsersList = [];
+        let allWithdrawalsList = [];
+        let isAdminView = false;
+        let activeTimerInterval = null;
+        let isEditingPayment = false;
+        const urlParams = new URLSearchParams(window.location.search);
+        const incomingRefUid = urlParams.get('ref') || '';
+
+        function getTodayStr() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const styles = {
+                success: 'bg-slate-900 border-emerald-500/50 text-emerald-300',
+                error: 'bg-slate-900 border-rose-500/50 text-rose-300',
+                info: 'bg-slate-900 border-amber-500/50 text-amber-300'
+            };
+            const icons = {
+                success: 'fa-circle-check text-emerald-400',
+                error: 'fa-circle-exclamation text-rose-400',
+                info: 'fa-circle-info text-amber-400'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-2xl text-xs sm:text-sm font-medium transition-all duration-300 ${styles[type] || styles.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Built-in Local Fallback DB so GitHub Pages works immediately with zero setup errors
+        function loadLocalDb() {
+            try {
+                const raw = localStorage.getItem(LOCAL_DB_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.adminConfig) adminConfig = { ...adminConfig, ...parsed.adminConfig };
+                    if (Array.isArray(parsed.users)) allUsersList = parsed.users;
+                    if (Array.isArray(parsed.withdrawals)) allWithdrawalsList = parsed.withdrawals;
+                }
+            } catch (e) {}
+            syncStateFromMemory();
+        }
+
+        function saveLocalDb() {
+            try {
+                localStorage.setItem(LOCAL_DB_KEY, JSON.stringify({
+                    adminConfig,
+                    users: allUsersList,
+                    withdrawals: allWithdrawalsList
+                }));
+            } catch (e) {}
+            syncStateFromMemory();
+        }
+
+        function syncStateFromMemory() {
+            userProfile = allUsersList.find(u => u.uid === currentUid) || null;
+            if (incomingRefUid && incomingRefUid !== currentUid) {
+                const inviter = allUsersList.find(u => u.uid === incomingRefUid);
+                const banner = document.getElementById('invited-by-banner');
+                const nameEl = document.getElementById('invited-by-name');
+                if (inviter && banner && nameEl) {
+                    nameEl.textContent = inviter.userName;
+                    banner.classList.remove('hidden');
+                }
+            }
+            if (userProfile && userProfile.lastWatchDate !== getTodayStr() && userProfile.watchedAdIds?.length > 0) {
+                userProfile.watchedAdIds = [];
+                userProfile.lastWatchDate = getTodayStr();
+                if (!isCloudMode) saveLocalDb();
+            }
+            updateMerchantDetails();
+            if (isAdminView) renderAdminLists();
+            renderApp();
+        }
+
+        async function initAppEngine() {
+            if (!firebaseConfig) {
+                isCloudMode = false;
+                loadLocalDb();
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                isCloudMode = true;
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (!user) return;
+                    currentUid = user.uid;
+                    setupRealtimeListeners();
+                });
+            } catch (err) {
+                console.warn("Switching to instant offline/local engine:", err);
+                isCloudMode = false;
+                loadLocalDb();
+            }
+        }
+
+        function setupRealtimeListeners() {
+            if (!db || !currentUid) return;
+
+            const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'main');
+            onSnapshot(settingsDocRef, (snap) => {
+                if (snap.exists()) {
+                    adminConfig = { ...adminConfig, ...snap.data() };
+                } else {
+                    setDoc(settingsDocRef, adminConfig).catch(() => {});
+                }
+                updateMerchantDetails();
+                if (isAdminView) populateAdminSettingsInputs();
+            }, () => {
+                isCloudMode = false;
+                loadLocalDb();
+            });
+
+            const usersColRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+            onSnapshot(usersColRef, (snapshot) => {
+                allUsersList = [];
+                snapshot.forEach((docSnap) => {
+                    allUsersList.push({ uid: docSnap.id, ...docSnap.data() });
+                });
+                syncStateFromMemory();
+            });
+
+            const wdColRef = collection(db, 'artifacts', appId, 'public', 'data', 'withdrawals');
+            onSnapshot(wdColRef, (snapshot) => {
+                allWithdrawalsList = [];
+                snapshot.forEach((docSnap) => {
+                    allWithdrawalsList.push({ docId: docSnap.id, ...docSnap.data() });
+                });
+                allWithdrawalsList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                if (isAdminView) renderAdminLists();
+                renderWithdrawalHistory();
+            });
+        }
+
+        window.openAdminLoginModal = function() {
+            if (isAdminView) {
+                window.exitAdminPanel();
+                return;
+            }
+            document.getElementById('admin-pin-input').value = '';
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        };
+
+        window.closeAdminLoginModal = function() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        };
+
+        window.verifyAdminPin = function(event) {
+            event.preventDefault();
+            const entered = document.getElementById('admin-pin-input').value.trim();
+            if (entered === String(adminConfig.pin)) {
+                window.closeAdminLoginModal();
+                isAdminView = true;
+                populateAdminSettingsInputs();
+                renderAdminLists();
+                renderApp();
+                showToast('Admin Panel khul gaya hai!', 'success');
+            } else {
+                showToast('Ghalat PIN! Default PIN 1234 hai.', 'error');
+            }
+        };
+
+        window.exitAdminPanel = function() {
+            isAdminView = false;
+            updateMerchantDetails();
+            renderApp();
+        };
+
+        function populateAdminSettingsInputs() {
+            document.getElementById('admin-jazzcash-title').value = adminConfig.jazzCashTitle || 'AdEarn JazzCash';
+            document.getElementById('admin-jazzcash').value = adminConfig.jazzCash || '';
+            document.getElementById('admin-easypaisa-title').value = adminConfig.easyPaisaTitle || 'AdEarn EasyPaisa';
+            document.getElementById('admin-easypaisa').value = adminConfig.easyPaisa || '';
+            document.getElementById('admin-joining-fee').value = adminConfig.joiningFee || 1000;
+            document.getElementById('admin-referral-bonus').value = adminConfig.referralBonusCoins ?? 1000;
+            document.getElementById('admin-new-pin').value = adminConfig.pin || '1234';
+            const savedFb = localStorage.getItem(SAVED_FB_CONFIG_KEY) || '';
+            const fbBox = document.getElementById('admin-firebase-json');
+            if (fbBox && savedFb) fbBox.value = savedFb;
+            const modeLabel = document.getElementById('admin-sync-mode-label');
+            if (modeLabel) {
+                modeLabel.textContent = isCloudMode
+                    ? 'Cloud Live Mode Connected: Tamam mobiles live sync ho rahe hain.'
+                    : 'Instant Mode Active: Apne JazzCash/EasyPaisa numbers aur users yahan manage karain.';
+            }
+        }
+
+        function renderAdminLists() {
+            const totalUsers = allUsersList.length;
+            const pendingUsers = allUsersList.filter(u => u.status === 'pending').length;
+            const activeUsers = allUsersList.filter(u => u.status === 'active').length;
+            const pendingWd = allWithdrawalsList.filter(w => w.status === 'Pending').length;
+
+            document.getElementById('admin-stat-total-users').textContent = totalUsers;
+            document.getElementById('admin-stat-pending-users').textContent = pendingUsers;
+            document.getElementById('admin-stat-active-users').textContent = activeUsers;
+            document.getElementById('admin-stat-pending-wd').textContent = pendingWd;
+
+            const usersListEl = document.getElementById('admin-users-list');
+            if (!allUsersList.length) {
+                usersListEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Abhi tak kisi user ne join nahi kiya.</p>';
+            } else {
+                const sortedUsers = [...allUsersList].sort((a, b) => (b.joinedAt || 0) - (a.joinedAt || 0));
+                usersListEl.innerHTML = sortedUsers.map(u => {
+                    const statusBadge = u.status === 'active'
+                        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400">Active</span>'
+                        : u.status === 'blocked'
+                        ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400">Blocked</span>'
+                        : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 animate-pulse">Pending Approval</span>';
+
+                    return `
+                        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-sm text-white">${u.userName}</span>
+                                        ${statusBadge}
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-0.5">Phone: <span class="text-slate-200 font-mono">${u.userPhone || 'N/A'}</span></p>
+                                    <p class="text-xs text-slate-400">Method: <span class="text-emerald-400 font-semibold">${u.joiningMethod}</span> | TID: <span class="font-mono text-amber-300 font-bold">${u.joiningTid}</span></p>
+                                    <p class="text-[11px] text-slate-400 mt-1">Balance: <span class="text-amber-400 font-bold">${u.coins || 0} Coins</span> | <span class="text-emerald-400 font-bold">Rs. ${(u.pkrBalance || 0).toFixed(2)}</span></p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                ${u.status !== 'active' ? `
+                                    <button onclick="adminSetUserStatus('${u.uid}', 'active')" class="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition">
+                                        <i class="fa-solid fa-check mr-1"></i> Approve &amp; Activate
+                                    </button>
+                                ` : ''}
+                                ${u.status !== 'blocked' ? `
+                                    <button onclick="adminSetUserStatus('${u.uid}', 'blocked')" class="flex-1 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-400 text-xs font-bold transition">
+                                        <i class="fa-solid fa-ban mr-1"></i> Block User
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const adminWdList = document.getElementById('admin-withdrawals-list');
+            if (!allWithdrawalsList.length) {
+                adminWdList.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Koi withdrawal request mojood nahi.</p>';
+            } else {
+                adminWdList.innerHTML = allWithdrawalsList.map(wd => `
+                    <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-sm text-emerald-400">Rs. ${wd.amount} PKR (${wd.method})</span>
+                            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                                wd.status === 'Paid' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                            }">${wd.status}</span>
+                        </div>
+                        <p class="text-xs text-slate-300">Account: <span class="font-bold text-white">${wd.accName}</span> — <span class="font-mono text-amber-300">${wd.accNum}</span></p>
+                        <p class="text-[11px] text-slate-500">User: ${wd.userName || 'Member'} • ${wd.date}</p>
+                        ${wd.status !== 'Paid' ? `
+                            <button onclick="markWithdrawalPaid('${wd.docId}')" class="w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition">
+                                <i class="fa-solid fa-check mr-1"></i> Mark as Paid (Payment Sent)
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+        }
+
+        window.saveAdminSettings = async function(event) {
+            event.preventDefault();
+
+            const fbRaw = (document.getElementById('admin-firebase-json')?.value || '').trim();
+            if (fbRaw) {
+                try {
+                    const parsedFb = JSON.parse(fbRaw);
+                    if (parsedFb && parsedFb.apiKey) {
+                        localStorage.setItem(SAVED_FB_CONFIG_KEY, JSON.stringify(parsedFb));
+                        showToast('Firebase Cloud Config save ho gayi! Page refresh ho raha hai...', 'success');
+                        setTimeout(() => window.location.reload(), 1200);
+                        return;
+                    }
+                } catch (e) {
+                    showToast('Firebase Config format sahi nahi hai.', 'error');
+                    return;
+                }
+            }
+
+            const newConfig = {
+                jazzCashTitle: document.getElementById('admin-jazzcash-title').value.trim(),
+                jazzCash: document.getElementById('admin-jazzcash').value.trim(),
+                easyPaisaTitle: document.getElementById('admin-easypaisa-title').value.trim(),
+                easyPaisa: document.getElementById('admin-easypaisa').value.trim(),
+                joiningFee: parseInt(document.getElementById('admin-joining-fee').value, 10) || 1000,
+                referralBonusCoins: parseInt(document.getElementById('admin-referral-bonus').value, 10) || 0,
+                extraReferralCoins: 1000,
+                pin: document.getElementById('admin-new-pin').value.trim() || '1234'
+            };
+
+            adminConfig = { ...adminConfig, ...newConfig };
+
+            if (isCloudMode && db) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'main'), newConfig);
+                } catch (err) {
+                    console.error(err);
+                }
+            } else {
+                saveLocalDb();
+            }
+            updateMerchantDetails();
+            showToast('JazzCash, EasyPaisa aur Bonus settings save ho gaye!', 'success');
+        };
+
+        window.adminSetUserStatus = async function(targetUid, newStatus) {
+            const targetUser = allUsersList.find(u => u.uid === targetUid);
+            if (!targetUser) return;
+
+            const userUpdates = { status: newStatus };
+            const instantBonus = Number(adminConfig.referralBonusCoins) || 1000;
+            const extraLockedBonus = Number(adminConfig.extraReferralCoins) || 1000;
+
+            if (newStatus === 'active' && targetUser.referredBy && !targetUser.referralBonusPaid) {
+                const inviter = allUsersList.find(u => u.uid === targetUser.referredBy);
+                if (inviter) {
+                    const inviterUpdates = {
+                        coins: (inviter.coins || 0) + instantBonus,
+                        referralEarningsCoins: (inviter.referralEarningsCoins || 0) + instantBonus,
+                        extraLockedCoins: (inviter.extraLockedCoins || 0) + extraLockedBonus
+                    };
+                    if (isCloudMode && db) {
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', inviter.uid), inviterUpdates);
+                    } else {
+                        Object.assign(inviter, inviterUpdates);
+                    }
+                }
+                userUpdates.referralBonusPaid = true;
+            }
+
+            if (isCloudMode && db) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', targetUid), userUpdates);
+            } else {
+                Object.assign(targetUser, userUpdates);
+                saveLocalDb();
+            }
+            showToast(newStatus === 'active' ? 'User Approve aur Active ho gaya!' : 'User Block kar diya gaya.', 'info');
+        };
+
+        window.markWithdrawalPaid = async function(docId) {
+            if (isCloudMode && db) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'withdrawals', docId), { status: 'Paid' });
+            } else {
+                const wd = allWithdrawalsList.find(w => w.docId === docId);
+                if (wd) wd.status = 'Paid';
+                saveLocalDb();
+            }
+            showToast('Withdrawal status "Paid" mark ho gaya!', 'success');
+        };
+
+        window.updateMerchantDetails = function() {
+            const selected = document.querySelector('input[name="joinMethod"]:checked')?.value || 'JazzCash';
+            const titleLabelEl = document.getElementById('merchant-title-label');
+            const titleEl = document.getElementById('merchant-title-display');
+            const labelEl = document.getElementById('merchant-label');
+            const numEl = document.getElementById('merchant-number');
+
+            const feeFormatted = Number(adminConfig.joiningFee).toLocaleString();
+            const feeText1 = document.getElementById('display-fee-text');
+            const feeText2 = document.getElementById('display-fee-amount');
+            const feeText3 = document.getElementById('pending-fee-display');
+            if (feeText1) feeText1.textContent = feeFormatted;
+            if (feeText2) feeText2.textContent = feeFormatted;
+            if (feeText3) feeText3.textContent = feeFormatted;
+
+            if (selected === 'JazzCash') {
+                if (titleLabelEl) titleLabelEl.textContent = 'JazzCash Account Name:';
+                if (titleEl) titleEl.textContent = adminConfig.jazzCashTitle || 'AdEarn JazzCash';
+                labelEl.textContent = 'JazzCash Number:';
+                numEl.textContent = adminConfig.jazzCash;
+            } else {
+                if (titleLabelEl) titleLabelEl.textContent = 'EasyPaisa Account Name:';
+                if (titleEl) titleEl.textContent = adminConfig.easyPaisaTitle || 'AdEarn EasyPaisa';
+                labelEl.textContent = 'EasyPaisa Number:';
+                numEl.textContent = adminConfig.easyPaisa;
+            }
+        };
+
+        window.copyMerchantNumber = function() {
+            const text = document.getElementById('merchant-number').textContent;
+            const tempInput = document.createElement('input');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast(`Copied: ${text}`, 'info');
+        };
+
+        window.copyReferralLink = function() {
+            const link = getMyReferralLink();
+            const tempInput = document.createElement('input');
+            tempInput.value = link;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Invite link copy ho gaya hai!', 'success');
+        };
+
+        window.editSubmittedPayment = function() {
+            isEditingPayment = true;
+            renderApp();
+        };
+
+        window.handleActivation = async function(event) {
+            event.preventDefault();
+
+            const senderName = document.getElementById('join-sender-name').value.trim();
+            const senderPhone = document.getElementById('join-sender-phone').value.trim();
+            const tid = document.getElementById('join-tid').value.trim();
+            const method = document.querySelector('input[name="joinMethod"]:checked').value;
+
+            const validReferrer = (incomingRefUid && incomingRefUid !== currentUid) ? incomingRefUid : (userProfile?.referredBy || '');
+
+            const newUserData = {
+                uid: currentUid,
+                userName: senderName,
+                userPhone: senderPhone,
+                joiningMethod: method,
+                joiningTid: tid,
+                status: 'pending',
+                referredBy: validReferrer,
+                referralBonusPaid: userProfile?.referralBonusPaid || false,
+                referralEarningsCoins: userProfile?.referralEarningsCoins || 0,
+                extraLockedCoins: userProfile?.extraLockedCoins || 0,
+                claimedExtraMilestones: userProfile?.claimedExtraMilestones || 0,
+                coins: userProfile?.coins || 0,
+                pkrBalance: userProfile?.pkrBalance || 0,
+                watchedAdIds: userProfile?.watchedAdIds || [],
+                lastWatchDate: getTodayStr(),
+                joinedAt: userProfile?.joinedAt || Date.now()
+            };
+
+            isEditingPayment = false;
+
+            if (isCloudMode && db) {
+                try {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUid), newUserData);
+                    showToast('Payment details Admin ko bhej di gayi hain! Approval ka intezar karain.', 'success');
+                } catch (err) {
+                    console.error(err);
+                    showToast('Request submit karne mein error aaya.', 'error');
+                }
+            } else {
+                const idx = allUsersList.findIndex(u => u.uid === currentUid);
+                if (idx >= 0) allUsersList[idx] = newUserData;
+                else allUsersList.push(newUserData);
+                saveLocalDb();
+                showToast('Payment details submit ho gayi hain! Admin Panel se approve karain.', 'success');
+            }
+        };
+
+        function renderApp() {
+            const navBadge = document.getElementById('nav-status-badge');
+            const adminScreen = document.getElementById('admin-screen');
+            const activationScreen = document.getElementById('activation-screen');
+            const dashboardScreen = document.getElementById('dashboard-screen');
+
+            if (isAdminView) {
+                adminScreen.classList.remove('hidden');
+                activationScreen.classList.add('hidden');
+                dashboardScreen.classList.add('hidden');
+                return;
+            }
+
+            adminScreen.classList.add('hidden');
+
+            if (!userProfile || userProfile.status !== 'active') {
+                activationScreen.classList.remove('hidden');
+                dashboardScreen.classList.add('hidden');
+
+                const pendingBox = document.getElementById('pending-approval-box');
+                const blockedBox = document.getElementById('blocked-account-box');
+                const formWrapper = document.getElementById('joining-form-wrapper');
+
+                if (userProfile && userProfile.status === 'pending' && !isEditingPayment) {
+                    navBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1.5';
+                    navBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Pending';
+
+                    pendingBox.classList.remove('hidden');
+                    blockedBox.classList.add('hidden');
+                    formWrapper.classList.add('hidden');
+
+                    document.getElementById('pending-user-name').textContent = userProfile.userName;
+                    document.getElementById('pending-user-phone').textContent = userProfile.userPhone || '-';
+                    document.getElementById('pending-method').textContent = userProfile.joiningMethod;
+                    document.getElementById('pending-tid').textContent = userProfile.joiningTid;
+                } else if (userProfile && userProfile.status === 'blocked') {
+                    navBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1.5';
+                    navBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> Blocked';
+
+                    pendingBox.classList.add('hidden');
+                    blockedBox.classList.remove('hidden');
+                    formWrapper.classList.add('hidden');
+                } else {
+                    navBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1.5';
+                    navBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span> Inactive';
+
+                    pendingBox.classList.add('hidden');
+                    blockedBox.classList.add('hidden');
+                    formWrapper.classList.remove('hidden');
+                }
+                return;
+            }
+
+            navBadge.className = 'px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5';
+            navBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Active';
+
+            activationScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+
+            const coins = userProfile.coins || 0;
+            const extraLockedCoins = userProfile.extraLockedCoins || 0;
+            const pkrBalance = userProfile.pkrBalance || 0;
+            const watchedIds = userProfile.watchedAdIds || [];
+
+            document.getElementById('user-greeting').textContent = `Welcome, ${userProfile.userName}!`;
+            document.getElementById('today-date-badge').textContent = getTodayStr();
+            document.getElementById('stat-coins').textContent = coins.toLocaleString();
+            document.getElementById('stat-extra-coins-mini').textContent = extraLockedCoins.toLocaleString();
+            document.getElementById('stat-pkr').textContent = pkrBalance.toFixed(2);
+
+            const watchedCount = watchedIds.length;
+            const percent = Math.round((watchedCount / DAILY_ADS.length) * 100);
+            document.getElementById('stat-ads-watched').textContent = watchedCount;
+            document.getElementById('stat-ads-percent').textContent = `${percent}%`;
+            document.getElementById('ads-progress-bar').style.width = `${percent}%`;
+
+            document.getElementById('conv-avail-coins').textContent = coins.toLocaleString();
+            document.getElementById('conv-locked-coins').textContent = extraLockedCoins.toLocaleString();
+            document.getElementById('conv-est-pkr').textContent = (coins / EXCHANGE_RATE).toFixed(2);
+            document.getElementById('withdraw-avail-pkr').textContent = pkrBalance.toFixed(2);
+
+            const targetPct = Math.min(100, Math.round((pkrBalance / MIN_WITHDRAW_PKR) * 100));
+            document.getElementById('withdraw-progress-bar').style.width = `${targetPct}%`;
+            const targetStatusEl = document.getElementById('withdraw-target-status');
+            if (pkrBalance >= MIN_WITHDRAW_PKR) {
+                targetStatusEl.textContent = 'Eligible for Withdrawal!';
+                targetStatusEl.className = 'font-bold text-emerald-400';
+            } else {
+                targetStatusEl.textContent = `${Math.floor(pkrBalance)} / 1,000 PKR`;
+                targetStatusEl.className = 'font-bold text-amber-400';
+            }
+
+            renderAdsGrid(watchedIds);
+            renderMyTeam();
+            renderWithdrawalHistory();
+        }
+
+        function getMyReferralLink() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            return `${baseUrl}?ref=${currentUid}`;
+        }
+
+        function renderMyTeam() {
+            const myTeam = allUsersList.filter(u => u.referredBy === currentUid);
+            const activeCount = myTeam.filter(u => u.status === 'active').length;
+            const pendingCount = myTeam.filter(u => u.status !== 'active').length;
+            const instantBonusPerInvite = Number(adminConfig.referralBonusCoins) || 1000;
+            const extraBonusPerInvite = Number(adminConfig.extraReferralCoins) || 1000;
+            const totalBonusEarned = userProfile?.referralEarningsCoins || (activeCount * instantBonusPerInvite);
+            const extraLockedCoins = userProfile?.extraLockedCoins || 0;
+
+            document.getElementById('tab-team-count').textContent = myTeam.length;
+            document.getElementById('team-bonus-display').textContent = instantBonusPerInvite.toLocaleString();
+            document.getElementById('team-extra-bonus-display').textContent = extraBonusPerInvite.toLocaleString();
+            document.getElementById('team-total-bonus-coins').textContent = totalBonusEarned.toLocaleString();
+            const myRefLink = getMyReferralLink();
+            document.getElementById('my-referral-link-input').value = myRefLink;
+            const homeRefInput = document.getElementById('home-referral-link-input');
+            if (homeRefInput) homeRefInput.value = myRefLink;
+
+            const totalUnlockedBatches = Math.floor(activeCount / 10);
+            const claimedBatches = userProfile?.claimedExtraMilestones || 0;
+            const availableUnlockBatches = Math.max(0, totalUnlockedBatches - claimedBatches);
+            const currentCycleMembers = activeCount % 10;
+
+            document.getElementById('extra-locked-coins-balance').textContent = extraLockedCoins.toLocaleString();
+            document.getElementById('extra-locked-pkr-val').textContent = (extraLockedCoins / EXCHANGE_RATE).toFixed(0);
+
+            const vaultIcon = document.getElementById('extra-vault-icon');
+            const vaultBadge = document.getElementById('extra-vault-badge');
+            const milestoneLabel = document.getElementById('extra-milestone-label');
+            const milestoneProgressText = document.getElementById('extra-milestone-progress-text');
+            const milestoneBar = document.getElementById('extra-milestone-bar');
+            const unlockHint = document.getElementById('extra-unlock-hint');
+            const claimExtraBtn = document.getElementById('claim-extra-coins-btn');
+
+            if (availableUnlockBatches > 0 && extraLockedCoins > 0) {
+                const unlockableCoins = Math.min(extraLockedCoins, availableUnlockBatches * 10 * extraBonusPerInvite);
+                vaultIcon.className = 'fa-solid fa-lock-open text-emerald-400';
+                vaultBadge.textContent = 'Unlocked!';
+                vaultBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+
+                milestoneLabel.textContent = `${(claimedBatches + 1) * 10} Active Members Milestone Mukammal!`;
+                milestoneProgressText.textContent = '10 / 10 Ready';
+                milestoneBar.style.width = '100%';
+                unlockHint.textContent = `Mubarak ho! Aap ke ${unlockableCoins.toLocaleString()} Extra Coins convert hone ke liye tayyar hain.`;
+
+                claimExtraBtn.disabled = false;
+                claimExtraBtn.className = 'w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-500 to-emerald-500 hover:from-purple-400 hover:to-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm cursor-pointer transition shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2';
+                claimExtraBtn.innerHTML = `<i class="fa-solid fa-unlock-keyhole"></i> Convert ${unlockableCoins.toLocaleString()} Extra Coins Now`;
+            } else {
+                const nextTarget = (claimedBatches + 1) * 10;
+                const progressInBatch = activeCount >= nextTarget ? 10 : currentCycleMembers;
+                const pct = Math.min(100, Math.round((progressInBatch / 10) * 100));
+
+                vaultIcon.className = 'fa-solid fa-lock text-purple-400';
+                vaultBadge.textContent = 'Locked';
+                vaultBadge.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30';
+
+                milestoneLabel.textContent = `Target: ${nextTarget} Active Members`;
+                milestoneProgressText.textContent = `${activeCount} / ${nextTarget} Active Members`;
+                milestoneBar.style.width = `${pct}%`;
+                unlockHint.textContent = `Mazeed ${Math.max(0, nextTarget - activeCount)} Active Members add karain taake aap apne Extra Coins convert kar sakain.`;
+
+                claimExtraBtn.disabled = true;
+                claimExtraBtn.className = 'w-full py-3.5 px-4 rounded-xl bg-slate-800 text-slate-400 font-extrabold text-xs sm:text-sm cursor-not-allowed transition flex items-center justify-center gap-2';
+                claimExtraBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Locked (${activeCount}/${nextTarget} Active Members)`;
+            }
+
+            document.getElementById('team-stat-total').textContent = myTeam.length;
+            document.getElementById('team-stat-active').textContent = activeCount;
+            document.getElementById('team-stat-pending').textContent = pendingCount;
+
+            const listEl = document.getElementById('my-team-members-list');
+            if (!myTeam.length) {
+                listEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-6">Abhi tak aap ke link se kisi ne join nahi kiya. Apna link share karain aur bonus kamayein!</p>';
+                return;
+            }
+
+            const sortedTeam = [...myTeam].sort((a, b) => (b.joinedAt || 0) - (a.joinedAt || 0));
+            listEl.innerHTML = sortedTeam.map((member, index) => {
+                const isMemberActive = member.status === 'active';
+                const joinDate = member.joinedAt
+                    ? new Date(member.joinedAt).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' })
+                    : 'Recent';
+
+                return `
+                    <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center font-bold text-sm text-emerald-400">
+                                #${index + 1}
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-white">${member.userName}</p>
+                                <p class="text-[11px] text-slate-400">Joined: ${joinDate} • ${member.joiningMethod}</p>
+                            </div>
+                        </div>
+                        <div class="text-right space-y-1">
+                            ${
+                                isMemberActive
+                                    ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 block">+${instantBonusPerInvite} Instant</span>
+                                       <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 block">+${extraBonusPerInvite} Extra Locked</span>`
+                                    : `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 block">Pending</span>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.claimExtraLockedCoins = async function() {
+            if (!userProfile) return;
+
+            const myTeam = allUsersList.filter(u => u.referredBy === currentUid);
+            const activeCount = myTeam.filter(u => u.status === 'active').length;
+            const totalUnlockedBatches = Math.floor(activeCount / 10);
+            const claimedBatches = userProfile.claimedExtraMilestones || 0;
+            const availableBatches = totalUnlockedBatches - claimedBatches;
+            const extraLocked = userProfile.extraLockedCoins || 0;
+            const extraBonusPerInvite = Number(adminConfig.extraReferralCoins) || 1000;
+
+            if (availableBatches <= 0 || extraLocked <= 0) {
+                showToast('Har 10 Active Members mukammal hone par hi Extra Coins convert hon ge.', 'error');
+                return;
+            }
+
+            const coinsToUnlock = Math.min(extraLocked, availableBatches * 10 * extraBonusPerInvite);
+            const remainingExtraLocked = Math.max(0, extraLocked - coinsToUnlock);
+            const newAvailableCoins = (userProfile.coins || 0) + coinsToUnlock;
+
+            const updates = {
+                coins: newAvailableCoins,
+                extraLockedCoins: remainingExtraLocked,
+                claimedExtraMilestones: claimedBatches + availableBatches
+            };
+
+            if (isCloudMode && db) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUid), updates);
+            } else {
+                Object.assign(userProfile, updates);
+                saveLocalDb();
+            }
+            showToast(`${coinsToUnlock.toLocaleString()} Extra Coins unlock ho kar aap ke Available Coins mein add ho gaye hain!`, 'success');
+        };
+
+        function renderAdsGrid(watchedIds) {
+            const grid = document.getElementById('ads-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            DAILY_ADS.forEach((ad) => {
+                const isWatched = watchedIds.includes(ad.id);
+                const card = document.createElement('div');
+                card.className = `rounded-2xl border p-5 flex flex-col justify-between transition ${
+                    isWatched
+                        ? 'bg-slate-900/40 border-slate-800/70 opacity-75'
+                        : 'bg-slate-900 border-slate-800 hover:border-emerald-500/40 shadow-lg'
+                }`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-300">
+                                Ad #${ad.id} • ${ad.category}
+                            </span>
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold">
+                                +${ad.reward} Coins
+                            </span>
+                        </div>
+                        <div class="flex items-start gap-3.5 my-3">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-xl shrink-0 ${ad.color}">
+                                <i class="fa-solid ${ad.icon}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm leading-snug">${ad.title}</h4>
+                                <p class="text-xs text-slate-400 mt-1 line-clamp-2">${ad.desc}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 mt-2 border-t border-slate-800/80">
+                        ${
+                            isWatched
+                                ? `<button disabled class="w-full py-2.5 px-4 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-bold text-xs flex items-center justify-center gap-2 cursor-default">
+                                     <i class="fa-solid fa-circle-check"></i> Watched (+${ad.reward} Coins Added)
+                                   </button>`
+                                : `<button onclick="startWatchingAd(${ad.id})" class="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition flex items-center justify-center gap-2 shadow-md shadow-emerald-500/15">
+                                     <i class="fa-solid fa-play"></i> Watch Ad (5s)
+                                   </button>`
+                        }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.startWatchingAd = function(adId) {
+            if (!userProfile || (userProfile.watchedAdIds || []).includes(adId)) return;
+
+            const ad = DAILY_ADS.find(item => item.id === adId);
+            if (!ad) return;
+
+            document.getElementById('modal-ad-badge').textContent = `Sponsored Ad #${ad.id} — ${ad.category}`;
+            document.getElementById('modal-ad-reward').textContent = ad.reward;
+            document.getElementById('modal-ad-title').textContent = ad.title;
+            document.getElementById('modal-ad-desc').textContent = ad.desc;
+            document.getElementById('modal-ad-icon').innerHTML = `<i class="fa-solid ${ad.icon} ${ad.color}"></i>`;
+
+            const timerBar = document.getElementById('modal-timer-bar');
+            const secondsText = document.getElementById('timer-seconds-text');
+            const statusText = document.getElementById('timer-status-text');
+            const claimBtn = document.getElementById('modal-claim-btn');
+
+            let remaining = 5;
+            timerBar.style.transition = 'none';
+            timerBar.style.width = '0%';
+            secondsText.textContent = '5s';
+            statusText.textContent = 'Ad chal raha hai, intezar karain...';
+            claimBtn.disabled = true;
+            claimBtn.className = 'w-full py-3 rounded-xl bg-slate-800 text-slate-400 font-bold text-sm cursor-not-allowed transition';
+            claimBtn.textContent = 'Please wait 5 seconds...';
+
+            document.getElementById('ad-player-modal').classList.remove('hidden');
+
+            setTimeout(() => {
+                timerBar.style.transition = 'width 5s linear';
+                timerBar.style.width = '100%';
+            }, 50);
+
+            if (activeTimerInterval) clearInterval(activeTimerInterval);
+
+            activeTimerInterval = setInterval(async () => {
+                remaining -= 1;
+                if (remaining > 0) {
+                    secondsText.textContent = `${remaining}s`;
+                    claimBtn.textContent = `Please wait ${remaining} seconds...`;
+                } else {
+                    clearInterval(activeTimerInterval);
+                    secondsText.textContent = 'Completed!';
+                    statusText.textContent = 'Ad mukammal! Coins aap ke account mein add ho gaye.';
+
+                    const updatedWatched = [...(userProfile.watchedAdIds || []), ad.id];
+                    const updatedCoins = (userProfile.coins || 0) + ad.reward;
+                    const updates = {
+                        watchedAdIds: updatedWatched,
+                        coins: updatedCoins,
+                        lastWatchDate: getTodayStr()
+                    };
+
+                    if (isCloudMode && db) {
+                        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUid), updates);
+                    } else {
+                        Object.assign(userProfile, updates);
+                        saveLocalDb();
+                    }
+                    showToast(`+${ad.reward} Coins aap ke account mein automatic add ho gaye!`, 'success');
+
+                    claimBtn.disabled = false;
+                    claimBtn.className = 'w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm cursor-pointer transition shadow-lg shadow-emerald-500/20';
+                    claimBtn.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Done! (+${ad.reward} Coins Credited)`;
+                }
+            }, 1000);
+        };
+
+        window.shareOnWhatsApp = function() {
+            const link = getMyReferralLink();
+            const text = encodeURIComponent(`Assalam-o-Alaikum! Rozana 10 Ads dekh kar ghar baithe PKR kamayein. Mere link se abhi join karain:\n${link}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        };
+
+        window.closeAdModal = function() {
+            document.getElementById('ad-player-modal').classList.add('hidden');
+        };
+
+        window.switchTab = function(tabName) {
+            const tabs = ['ads', 'team', 'wallet'];
+            tabs.forEach((t) => {
+                const contentEl = document.getElementById(`tab-content-${t}`);
+                const btnEl = document.getElementById(`tab-btn-${t}`);
+                if (!contentEl || !btnEl) return;
+
+                if (t === tabName) {
+                    contentEl.classList.remove('hidden');
+                    btnEl.className = 'flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 text-slate-950 transition flex items-center justify-center gap-1.5';
+                } else {
+                    contentEl.classList.add('hidden');
+                    btnEl.className = 'flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-300 hover:bg-slate-800 transition flex items-center justify-center gap-1.5';
+                }
+            });
+        };
+
+        window.fillMaxCoins = function() {
+            const input = document.getElementById('convert-input');
+            input.value = userProfile?.coins || 0;
+            window.updateConvertPreview();
+        };
+
+        window.updateConvertPreview = function() {
+            const coinsVal = parseFloat(document.getElementById('convert-input').value) || 0;
+            const pkrVal = coinsVal / EXCHANGE_RATE;
+            document.getElementById('convert-output-preview').textContent = pkrVal.toFixed(2);
+        };
+
+        window.convertCoinsToPkr = async function() {
+            if (!userProfile) return;
+            const input = document.getElementById('convert-input');
+            const coinsToConvert = parseInt(input.value, 10);
+            const currentCoins = userProfile.coins || 0;
+
+            if (!coinsToConvert || coinsToConvert < 10) {
+                showToast('Kam az kam 10 Coins enter karain.', 'error');
+                return;
+            }
+            if (coinsToConvert > currentCoins) {
+                showToast('Aap ke paas itne Coins mojood nahi hain.', 'error');
+                return;
+            }
+
+            const pkrEarned = coinsToConvert / EXCHANGE_RATE;
+            const newCoins = currentCoins - coinsToConvert;
+            const newPkr = parseFloat(((userProfile.pkrBalance || 0) + pkrEarned).toFixed(2));
+            const updates = { coins: newCoins, pkrBalance: newPkr };
+
+            if (isCloudMode && db) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUid), updates);
+            } else {
+                Object.assign(userProfile, updates);
+                saveLocalDb();
+            }
+
+            input.value = '';
+            document.getElementById('convert-output-preview').textContent = '0.00';
+            showToast(`${coinsToConvert} Coins kamyabi se Rs. ${pkrEarned.toFixed(2)} PKR mein convert ho gaye!`, 'success');
+        };
+
+        window.handleWithdrawal = async function(event) {
+            event.preventDefault();
+            if (!userProfile) return;
+
+            const method = document.querySelector('input[name="withdrawMethod"]:checked').value;
+            const accName = document.getElementById('withdraw-acc-name').value.trim();
+            const accNum = document.getElementById('withdraw-acc-num').value.trim();
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
+            const currentPkr = userProfile.pkrBalance || 0;
+
+            if (currentPkr < MIN_WITHDRAW_PKR) {
+                showToast(`Withdrawal ke liye kam az kam 1,000 PKR hona zaroori hain. Abhi aap ka balance Rs. ${currentPkr.toFixed(2)} hai.`, 'error');
+                return;
+            }
+            if (!amount || amount < MIN_WITHDRAW_PKR) {
+                showToast('Minimum withdrawal limit 1,000 PKR hai.', 'error');
+                return;
+            }
+            if (amount > currentPkr) {
+                showToast('Aap ke PKR Wallet mein itna balance mojood nahi hai.', 'error');
+                return;
+            }
+
+            const newPkr = parseFloat((currentPkr - amount).toFixed(2));
+            const wdPayload = {
+                docId: 'WD-' + Date.now(),
+                uid: currentUid,
+                userName: userProfile.userName,
+                method,
+                accName,
+                accNum,
+                amount: amount.toFixed(2),
+                date: new Date().toLocaleDateString('en-PK', { day: '2-digit', month: 'short', year: 'numeric' }),
+                status: 'Pending',
+                createdAt: Date.now()
+            };
+
+            if (isCloudMode && db) {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUid), { pkrBalance: newPkr });
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'withdrawals'), wdPayload);
+            } else {
+                userProfile.pkrBalance = newPkr;
+                allWithdrawalsList.unshift(wdPayload);
+                saveLocalDb();
+            }
+
+            document.getElementById('withdrawal-form').reset();
+            showToast(`Rs. ${amount.toFixed(2)} PKR ki withdrawal request (${method}) Admin ko bhej di gayi hai!`, 'success');
+        };
+
+        function renderWithdrawalHistory() {
+            const listEl = document.getElementById('withdrawal-history-list');
+            if (!listEl || !currentUid) return;
+
+            const myWithdrawals = allWithdrawalsList.filter(w => w.uid === currentUid);
+            if (!myWithdrawals.length) {
+                listEl.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">Abhi tak koi withdrawal request nahi ki gayi.</p>';
+                return;
+            }
+
+            listEl.innerHTML = myWithdrawals.map(item => `
+                <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-sm text-white">Rs. ${item.amount} PKR</span>
+                            <span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-medium">${item.method}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">${item.accName} (${item.accNum}) • ${item.date}</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold ${
+                        item.status === 'Paid'
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                    }">
+                        ${item.status}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        window.openAppGuideModal = function() {
+            document.getElementById('app-guide-modal').classList.remove('hidden');
+        };
+        window.closeAppGuideModal = function() {
+            document.getElementById('app-guide-modal').classList.add('hidden');
+        };
+
+        window.onload = function() {
+            initAppEngine();
+        };
+    </script>
+</body>
+</html>
